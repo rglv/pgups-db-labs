@@ -2,19 +2,13 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.4.4
--- Dumped by pg_dump version 9.4.0
--- Started on 2015-09-21 18:51:44
-
 SET statement_timeout = 0;
-SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 --
--- TOC entry 174 (class 3079 OID 11855)
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -22,8 +16,6 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- TOC entry 2002 (class 0 OID 0)
--- Dependencies: 174
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
 --
 
@@ -35,86 +27,402 @@ SET search_path = public, pg_catalog;
 SET default_with_oids = false;
 
 --
--- TOC entry 173 (class 1259 OID 16744)
--- Name: students; Type: TABLE; Schema: public; Owner: -
+-- Name: COURSE; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE students (
-    id integer NOT NULL,
-    stud_id character(10),
-    name character varying(255),
-    birthday date
+CREATE TABLE "COURSE" (
+    "ID" integer NOT NULL,
+    "TITLE" character varying(256)
 );
 
 
 --
--- TOC entry 172 (class 1259 OID 16742)
--- Name: students_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: TABLE "COURSE"; Type: COMMENT; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE students_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+COMMENT ON TABLE "COURSE" IS 'Предмет';
 
 
 --
--- TOC entry 2003 (class 0 OID 0)
--- Dependencies: 172
--- Name: students_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: COLUMN "COURSE"."TITLE"; Type: COMMENT; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE students_id_seq OWNED BY students.id;
+COMMENT ON COLUMN "COURSE"."TITLE" IS 'Название предмета';
 
 
 --
--- TOC entry 1881 (class 2604 OID 16747)
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: LESSON; Type: TABLE; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY students ALTER COLUMN id SET DEFAULT nextval('students_id_seq'::regclass);
-
-
---
--- TOC entry 1995 (class 0 OID 16744)
--- Dependencies: 173
--- Data for Name: students; Type: TABLE DATA; Schema: public; Owner: -
---
-
-INSERT INTO students (id, stud_id, name, birthday) VALUES (1, '111-432-01', 'Алексеев Алексей', '1997-01-01');
-INSERT INTO students (id, stud_id, name, birthday) VALUES (2, '111-432-02', 'Викторов Виктор', '1997-02-02');
-INSERT INTO students (id, stud_id, name, birthday) VALUES (3, '111-432-03', 'Дарьева Дарья', '1997-03-03');
+CREATE TABLE "LESSON" (
+    "ID" integer NOT NULL,
+    "DATE" date,
+    "COURSE_ID" integer,
+    "GROUP_ID" integer
+);
 
 
 --
--- TOC entry 2004 (class 0 OID 0)
--- Dependencies: 172
--- Name: students_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: STUDENT; Type: TABLE; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('students_id_seq', 3, true);
-
-
---
--- TOC entry 1883 (class 2606 OID 16749)
--- Name: students_pk; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY students
-    ADD CONSTRAINT students_pk PRIMARY KEY (id);
+CREATE TABLE "STUDENT" (
+    "ID" integer NOT NULL,
+    "SURNAME" character varying(128),
+    "NAME" character varying(128),
+    "PATRONYMIC" character varying(128),
+    "RECORD_BOOK_NUM" character varying(64),
+    "BIRTHDAY" date,
+    "GROUP_ID" integer
+);
 
 
 --
--- TOC entry 1884 (class 1259 OID 16750)
--- Name: students_stud_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: COLUMN "STUDENT"."RECORD_BOOK_NUM"; Type: COMMENT; Schema: public; Owner: -
 --
 
-CREATE INDEX students_stud_id_idx ON students USING btree (stud_id);
+COMMENT ON COLUMN "STUDENT"."RECORD_BOOK_NUM" IS 'Номер зачетной книжки';
 
 
--- Completed on 2015-09-21 18:51:44
+--
+-- Name: STUDENTS_TASK; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE "STUDENTS_TASK" (
+    "STUDENT_ID" integer,
+    "TASK_ID" integer,
+    "DATE_GIVEN" date,
+    "DATE_FINISHED" date
+);
+
+
+--
+-- Name: STUDENT_AT_LESSON; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE "STUDENT_AT_LESSON" (
+    "STUDENT_ID" integer,
+    "LESSON_ID" integer,
+    "MISSED" boolean,
+    "LATE" boolean
+);
+
+
+--
+-- Name: STUD_GROUP; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE "STUD_GROUP" (
+    "ID" integer NOT NULL,
+    "NAME" character varying(16)
+);
+
+
+--
+-- Name: TASK; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE "TASK" (
+    "ID" integer NOT NULL,
+    "COURSE_ID" integer,
+    "TITLE" character varying(256),
+    "DESCRIPTION" character varying(2048)
+);
+
+
+--
+-- Data for Name: COURSE; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO "COURSE" ("ID", "TITLE") VALUES (1, 'Структуры данных');
+INSERT INTO "COURSE" ("ID", "TITLE") VALUES (2, 'Базы данных');
+
+
+--
+-- Data for Name: LESSON; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (1, '2014-09-03', 1, 1);
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (2, '2014-09-10', 1, 1);
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (3, '2014-09-17', 1, 1);
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (4, '2014-09-24', 1, 1);
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (5, '2014-10-01', 1, 1);
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (6, '2014-10-08', 1, 1);
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (7, '2014-10-15', 1, 1);
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (8, '2014-10-22', 1, 1);
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (9, '2014-10-29', 1, 1);
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (10, '2014-11-05', 1, 1);
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (11, '2014-11-12', 1, 1);
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (12, '2014-11-19', 1, 1);
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (13, '2014-11-26', 1, 1);
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (14, '2014-12-03', 1, 1);
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (15, '2014-12-10', 1, 1);
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (16, '2014-12-17', 1, 1);
+INSERT INTO "LESSON" ("ID", "DATE", "COURSE_ID", "GROUP_ID") VALUES (17, '2014-12-24', 1, 1);
+
+
+--
+-- Data for Name: STUDENT; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (27, 'Криков', 'Андрей', 'Юрьевич', '621107', NULL, 2);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (26, 'Моисеев', 'Сергей', 'Сергеевич', '621108', NULL, 2);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (29, 'Петрова', 'Елена', 'Андреевна', '621110', NULL, 2);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (32, 'Сотенный', 'Кирилл', 'Денисович', '621112', NULL, 2);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (25, 'Супов', 'Петр', 'Евгеньевич', '621113', NULL, 2);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (24, 'Тарасов', 'Борис', 'Сергеевич', '621114', NULL, 2);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (21, 'Фокин', 'Александр', 'Сергеевич', '621116', NULL, 2);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (31, 'Храмов', 'Глеб', 'Николаевич', '621117', NULL, 2);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (34, 'Шумкин', 'Александр', 'Александрович', '621118', NULL, 2);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (7, 'Авторская', 'Валерия', 'Геннадьевна', '621001', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (3, 'Андреев', 'Евгений', 'Юрьевич', '621002', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (18, 'Астанина', 'Виктория', 'Алексеевна', '621003', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (1, 'Бутолин', 'Иван', 'Сергеевич', '621004', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (8, 'Гранит', 'Андрей', 'Владимирович', '621005', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (10, 'Иванов', 'Николай', 'Сергеевич', '621006', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (5, 'Коротков', 'Илья', 'Вадимович', '621007', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (12, 'Краснов', 'Александр', 'Викторович', '621009', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (13, 'Моховиков', 'Антон', 'Александрович', '621010', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (9, 'Повторов', 'Владислав', 'Олегович', '621014', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (6, 'Прямых', 'Никита', 'Евгеньевич', '621015', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (14, 'Равнов', 'Александр', 'Юрьевич', '621017', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (2, 'Сабов', 'Александр', 'Александрович', '621018', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (15, 'Салдин', 'Вячеслав', 'Алексеевич', '621019', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (4, 'Семшин', 'Станислав', 'Игоревич', '621020', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (16, 'Таранов', 'Александр', 'Андреевич', '621021', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (17, 'Хитрый', 'Александр', 'Николаевич', '621022', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (11, 'Широков', 'Николай', 'Иванович', '621023', NULL, 1);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (28, 'Атаманова', 'Елена', 'Федоровна', '621101', NULL, 2);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (30, 'Бахченко', 'Владимир', 'Анатольевич', '621102', NULL, 2);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (23, 'Егерский', 'Виталий', 'Александрович', '621103', NULL, 2);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (33, 'Ищенко', 'Елена', 'Витальевна', '621104', NULL, 2);
+INSERT INTO "STUDENT" ("ID", "SURNAME", "NAME", "PATRONYMIC", "RECORD_BOOK_NUM", "BIRTHDAY", "GROUP_ID") VALUES (22, 'Кабанов', 'Андрей', 'Владимирович', '621106', NULL, 2);
+
+
+--
+-- Data for Name: STUDENTS_TASK; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (1, 1, '2014-09-03', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (2, 1, '2014-09-03', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (3, 1, '2014-09-03', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (4, 1, '2014-09-03', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (5, 1, '2014-09-03', '2014-12-24');
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (6, 1, '2014-09-03', '2014-10-29');
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (7, 1, '2014-09-03', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (8, 1, '2014-09-03', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (9, 1, '2014-09-03', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (10, 1, '2014-09-03', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (11, 1, '2014-09-03', '2014-11-12');
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (12, 1, '2014-09-03', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (13, 1, '2014-09-03', '2014-12-30');
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (14, 1, '2014-09-03', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (15, 1, '2014-09-03', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (16, 1, '2014-09-03', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (17, 1, '2014-09-03', '2014-12-30');
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (18, 1, '2014-09-03', '2014-12-30');
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (1, 2, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (2, 2, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (3, 2, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (4, 2, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (5, 2, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (6, 2, '2014-10-01', '2014-11-19');
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (7, 2, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (8, 2, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (9, 2, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (10, 2, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (11, 2, '2014-10-01', '2014-12-26');
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (12, 2, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (13, 2, '2014-10-01', '2014-12-30');
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (14, 2, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (15, 2, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (16, 2, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (17, 2, '2014-10-01', '2014-12-26');
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (18, 2, '2014-10-01', '2014-12-30');
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (1, 3, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (2, 3, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (3, 3, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (4, 3, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (5, 3, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (6, 3, '2014-10-01', '2014-11-19');
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (7, 3, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (8, 3, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (9, 3, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (10, 3, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (11, 3, '2014-10-01', '2014-12-26');
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (12, 3, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (13, 3, '2014-10-01', '2014-12-30');
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (14, 3, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (15, 3, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (16, 3, '2014-10-01', NULL);
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (17, 3, '2014-10-01', '2014-12-26');
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (18, 3, '2014-10-01', '2014-12-30');
+INSERT INTO "STUDENTS_TASK" ("STUDENT_ID", "TASK_ID", "DATE_GIVEN", "DATE_FINISHED") VALUES (6, 4, '2014-09-03', '2014-12-24');
+
+
+--
+-- Data for Name: STUDENT_AT_LESSON; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: STUD_GROUP; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO "STUD_GROUP" ("ID", "NAME") VALUES (1, 'ИСБ-210');
+INSERT INTO "STUD_GROUP" ("ID", "NAME") VALUES (2, 'ПВБ-211');
+
+
+--
+-- Data for Name: TASK; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO "TASK" ("ID", "COURSE_ID", "TITLE", "DESCRIPTION") VALUES (1, 1, 'Л.Р. №1', 'Алгоритмы сортировки');
+INSERT INTO "TASK" ("ID", "COURSE_ID", "TITLE", "DESCRIPTION") VALUES (2, 1, 'Л.Р. №2 (ч.1)', 'Списковые структуры данных');
+INSERT INTO "TASK" ("ID", "COURSE_ID", "TITLE", "DESCRIPTION") VALUES (3, 1, 'Л.Р. №2 (ч.2)', 'Контейнерные классы в STL');
+INSERT INTO "TASK" ("ID", "COURSE_ID", "TITLE", "DESCRIPTION") VALUES (4, 1, 'Л.Р. №3', 'Бинарные деревья');
+INSERT INTO "TASK" ("ID", "COURSE_ID", "TITLE", "DESCRIPTION") VALUES (5, 1, 'Л.Р. №4', 'Хэш-таблицы');
+
+
+--
+-- Name: COURSE_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY "COURSE"
+    ADD CONSTRAINT "COURSE_pkey" PRIMARY KEY ("ID");
+
+
+--
+-- Name: LESSON_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY "LESSON"
+    ADD CONSTRAINT "LESSON_pkey" PRIMARY KEY ("ID");
+
+
+--
+-- Name: STUDENT_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY "STUDENT"
+    ADD CONSTRAINT "STUDENT_pkey" PRIMARY KEY ("ID");
+
+
+--
+-- Name: STUD_GROUP_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY "STUD_GROUP"
+    ADD CONSTRAINT "STUD_GROUP_pkey" PRIMARY KEY ("ID");
+
+
+--
+-- Name: TASK_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY "TASK"
+    ADD CONSTRAINT "TASK_pkey" PRIMARY KEY ("ID");
+
+
+--
+-- Name: fki_COURSE_fkey; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX "fki_COURSE_fkey" ON "TASK" USING btree ("COURSE_ID");
+
+
+--
+-- Name: fki_GROUP_fkey; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX "fki_GROUP_fkey" ON "LESSON" USING btree ("GROUP_ID");
+
+
+--
+-- Name: fki_LESSON_fkey; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX "fki_LESSON_fkey" ON "STUDENT_AT_LESSON" USING btree ("LESSON_ID");
+
+
+--
+-- Name: fki_STUDENT_fkey; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX "fki_STUDENT_fkey" ON "STUDENT_AT_LESSON" USING btree ("STUDENT_ID");
+
+
+--
+-- Name: fki_STUD_GROUP_fkey; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX "fki_STUD_GROUP_fkey" ON "STUDENT" USING btree ("GROUP_ID");
+
+
+--
+-- Name: COURSE_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY "LESSON"
+    ADD CONSTRAINT "COURSE_fkey" FOREIGN KEY ("COURSE_ID") REFERENCES "COURSE"("ID");
+
+
+--
+-- Name: COURSE_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY "TASK"
+    ADD CONSTRAINT "COURSE_fkey" FOREIGN KEY ("COURSE_ID") REFERENCES "COURSE"("ID");
+
+
+--
+-- Name: GROUP_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY "LESSON"
+    ADD CONSTRAINT "GROUP_fkey" FOREIGN KEY ("GROUP_ID") REFERENCES "STUD_GROUP"("ID");
+
+
+--
+-- Name: LESSON_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY "STUDENT_AT_LESSON"
+    ADD CONSTRAINT "LESSON_fkey" FOREIGN KEY ("LESSON_ID") REFERENCES "LESSON"("ID");
+
+
+--
+-- Name: STUDENTS_TASK_STUDENT_ID_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY "STUDENTS_TASK"
+    ADD CONSTRAINT "STUDENTS_TASK_STUDENT_ID_fkey" FOREIGN KEY ("STUDENT_ID") REFERENCES "STUDENT"("ID");
+
+
+--
+-- Name: STUDENTS_TASK_TASK_ID_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY "STUDENTS_TASK"
+    ADD CONSTRAINT "STUDENTS_TASK_TASK_ID_fkey" FOREIGN KEY ("TASK_ID") REFERENCES "TASK"("ID");
+
+
+--
+-- Name: STUDENT_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY "STUDENT_AT_LESSON"
+    ADD CONSTRAINT "STUDENT_fkey" FOREIGN KEY ("STUDENT_ID") REFERENCES "STUDENT"("ID");
+
+
+--
+-- Name: STUD_GROUP_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY "STUDENT"
+    ADD CONSTRAINT "STUD_GROUP_fkey" FOREIGN KEY ("GROUP_ID") REFERENCES "STUD_GROUP"("ID");
+
 
 --
 -- PostgreSQL database dump complete
