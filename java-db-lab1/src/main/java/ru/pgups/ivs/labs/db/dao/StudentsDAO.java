@@ -22,7 +22,7 @@ public class StudentsDAO {
         List<Student> studentsList = new LinkedList<>();
 
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM students");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM STUDENTS ORDER BY \"RECORD_BOOK_NUM\"");
 
             ResultSet rs = preparedStatement.executeQuery();
 
@@ -39,7 +39,7 @@ public class StudentsDAO {
 
     public Student get(long id) {
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM students WHERE id = ?");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM STUDENTS WHERE id = ?");
             ps.setLong(1, id);
 
             ResultSet rs = ps.executeQuery();
@@ -59,9 +59,16 @@ public class StudentsDAO {
     public Student readObject(ResultSet rs) throws SQLException {
         Student s = new Student();
         s.setId(rs.getLong("id"));
-        s.setName(rs.getString("name"));
-        s.setStudId(rs.getString("stud_id"));
-        s.setBirthday(new Date(rs.getDate("birthday").getTime()));
+        s.setName(
+                rs.getString("surname") + " "
+                        + rs.getString("name") + " "
+                        + rs.getString("patronymic")
+        );
+        s.setStudId(rs.getString("RECORD_BOOK_NUM"));
+        java.sql.Date birthday = rs.getDate("BIRTHDAY");
+        if (birthday != null) {
+            s.setBirthday(new Date(birthday.getTime()));
+        }
         return s;
     }
 }

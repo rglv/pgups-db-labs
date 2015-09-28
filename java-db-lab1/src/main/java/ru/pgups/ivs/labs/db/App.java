@@ -35,8 +35,11 @@ public class App
         System.out.println("= = = = = Students list = = = = = =");
         List<Student> students = studentsDAO.getAllStudents();
         for (Student student : students) {
-            System.out.println(String.format("%s (%d): %s [%s]", student.getStudId(), student.getId(), student.getName(),
-                    SimpleDateFormat.getDateInstance().format(student.getBirthday())));
+            System.out.println(String.format("%s (%02d): %s %s",
+                    student.getStudId(), student.getId(), student.getName(),
+                    student.getBirthday() != null ?
+                            " [" + SimpleDateFormat.getDateInstance().format(student.getBirthday()) + "]"
+                            : ""));
         }
     }
 
