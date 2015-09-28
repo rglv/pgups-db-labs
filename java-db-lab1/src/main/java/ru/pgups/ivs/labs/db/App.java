@@ -14,10 +14,10 @@ public class App
 {
     public static DataSource createDataSource() {
         PGPoolingDataSource poolingDataSource = new PGPoolingDataSource();
-        poolingDataSource.setDataSourceName("Lab 2 data source");
+        poolingDataSource.setDataSourceName("Lab 1 data source");
 
         poolingDataSource.setServerName("localhost");
-        poolingDataSource.setDatabaseName("java-db-lab2");
+        poolingDataSource.setDatabaseName("java-db-lab1");
         poolingDataSource.setUser("postgres");
         poolingDataSource.setPassword("postgres");
         poolingDataSource.setMaxConnections(8);
@@ -26,7 +26,7 @@ public class App
     }
 
     public static void main( String[] args ) throws SQLException {
-        System.out.println("Hello World! This is lab2 example for java-db course.");
+        System.out.println("Hello World! This is lab1 example for java-db course.");
 
         DataSource dataSource = createDataSource();
 
